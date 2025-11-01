@@ -17,11 +17,11 @@ public class TreasureUtil {
         List<ItemStack> treasures = new ArrayList<>();
         List<? extends String> treasureItems = Config.getTreasureItems();
 
-        // 主手/副手
+        // 主/副手
         ItemStack mainHand = entity.getMainHandItem();
         ItemStack offHand = entity.getOffhandItem();
         ItemStack[] handItems = {mainHand, offHand};
-        
+
         for (ItemStack stack : handItems) {
             if (!stack.isEmpty() && isTreasureItem(stack, treasureItems)) {
                 treasures.add(stack);

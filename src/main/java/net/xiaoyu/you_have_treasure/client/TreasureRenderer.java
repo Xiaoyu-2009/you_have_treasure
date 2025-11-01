@@ -6,23 +6,49 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.xiaoyu.you_have_treasure.YouHaveTreasure;
 import net.xiaoyu.you_have_treasure.network.NetworkHandler;
 import net.xiaoyu.you_have_treasure.util.TreasureUtil;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = YouHaveTreasure.MOD_ID)
 public class TreasureRenderer<T extends LivingEntity, M extends EntityModel<T> & HeadedModel> extends RenderLayer<T, M> {
+
+    @SubscribeEvent
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        // 玩家渲染
+        event.getSkins().forEach(skinName -> {
+            PlayerRenderer renderer = event.getSkin(skinName);
+            if (renderer != null) {
+                renderer.addLayer(new TreasureRenderer<>(renderer));
+            }
+        });
+
+        // 实体渲染
+        for (EntityType<?> entityType : event.getEntityTypes()) {
+            var renderer = event.getRenderer(entityType);
+            if (renderer instanceof LivingEntityRenderer livingRenderer) {
+                if (livingRenderer.getModel() instanceof HeadedModel) {
+                    livingRenderer.addLayer(new TreasureRenderer(livingRenderer));
+                }
+            }
+        }
+    }
     
     public TreasureRenderer(RenderLayerParent<T, M> renderer) {
         super(renderer);
