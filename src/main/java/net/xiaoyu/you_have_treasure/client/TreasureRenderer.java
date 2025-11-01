@@ -28,7 +28,7 @@ import java.util.List;
 
 @EventBusSubscriber(modid = YouHaveTreasure.MOD_ID)
 public class TreasureRenderer<T extends LivingEntity, M extends EntityModel<T> & HeadedModel> extends RenderLayer<T, M> {
-
+    
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         // 玩家渲染
@@ -67,10 +67,17 @@ public class TreasureRenderer<T extends LivingEntity, M extends EntityModel<T> &
             if (player == Minecraft.getInstance().player) {
                 return TreasureUtil.getCarriedTreasureItems(player);
             }
-            return NetworkHandler.getTreasureItemsForEntity(player.getId());
+            List<ItemStack> cachedItems = NetworkHandler.getTreasureItemsForEntity(player.getId());
+            if (!cachedItems.isEmpty()) {
+                return cachedItems;
+            }
         }
 
-        return NetworkHandler.getTreasureItemsForEntity(entity.getId());
+        List<ItemStack> cachedItems = NetworkHandler.getTreasureItemsForEntity(entity.getId());
+        if (!cachedItems.isEmpty()) {
+            return cachedItems;
+        }
+        return TreasureUtil.getCarriedTreasureItems(entity);
     }
     
     private void renderTreasureItems(PoseStack poseStack, MultiBufferSource buffer, int packedLight, T entity, List<ItemStack> itemStacks) {

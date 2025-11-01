@@ -24,7 +24,7 @@ public class NetworkHandler {
     
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(YouHaveTreasure.MOD_ID);
+        final PayloadRegistrar registrar = event.registrar(YouHaveTreasure.MOD_ID).optional();
 
         registrar.playBidirectional(
             TreasurePacket.TYPE,

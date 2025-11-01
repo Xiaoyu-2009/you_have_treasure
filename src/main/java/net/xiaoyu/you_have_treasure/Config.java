@@ -31,7 +31,7 @@ public class Config {
     }
     
     public static void registerConfig(ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.COMMON, SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, SPEC);
     }
     
     private static boolean isValidResourceLocation(String string) {
